@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Library,
 } from 'lucide-react'
+import Catalog from './components/catalog/Catalog'
 
 const menuItems = [
   {
@@ -155,8 +156,8 @@ function App() {
                 type="button"
                 onClick={() => navigateTo(item.id)}
                 className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl px-3 py-3 text-left transition-all duration-200 ${isActive
-                    ? `${item.activeBg} ${item.activeText} shadow-sm`
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                  ? `${item.activeBg} ${item.activeText} shadow-sm`
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                   }`}
               >
                 {isActive && (
@@ -167,8 +168,8 @@ function App() {
 
                 <span
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${isActive
-                      ? `bg-gradient-to-br ${item.color} text-white shadow-md`
-                      : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:shadow-sm'
+                    ? `bg-gradient-to-br ${item.color} text-white shadow-md`
+                    : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:shadow-sm'
                     }`}
                 >
                   <Icon size={19} />
@@ -276,31 +277,32 @@ function App() {
             </div>
 
             {/* Placeholder: aquí se renderizarán los módulos reales */}
-            <section className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:p-8">
-              <div className="flex items-start gap-4">
-                <div
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${activeItem.color} text-white shadow-lg`}
-                >
-                  <ActiveIcon size={27} />
-                </div>
+            {activeModule === 'catalog' ? (
+              <Catalog />
+            ) : (
+              <section className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:p-8">
+                <div className="flex items-start gap-4">
+                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${activeItem.color} text-white shadow-lg`}>
+                    <ActiveIcon size={27} />
+                  </div>
 
-                <div>
-                  <h3 className="text-xl font-extrabold text-slate-900">
-                    Módulo de {activeItem.label}
-                  </h3>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                    {activeItem.description}. Aquí se integrará el componente
-                    correspondiente sin sobrecargar App.jsx con la lógica
-                    de cada módulo.
-                  </p>
+                  <div>
+                    <h3 className="text-xl font-extrabold text-slate-900">
+                      Módulo de {activeItem.label}
+                    </h3>
 
-                  <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
-                    <Sparkles size={14} />
-                    Pendiente de implementar
-                  </span>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                      {activeItem.description}. Aquí se integrará el componente correspondiente.
+                    </p>
+
+                    <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
+                      <Sparkles size={14} />
+                      Pendiente de implementar
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
         </main>
       </div>

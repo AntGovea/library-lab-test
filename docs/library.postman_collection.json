@@ -1,0 +1,193 @@
+
+{
+  "info": {
+    "name": "NEXORA - API de Librería",
+    "description": "Colección para probar manualmente la API: salud, conexión a PostgreSQL, CRUD de libros, búsqueda y compras.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "sever",
+      "value": "localhost"
+    },
+    {
+      "key": "port",
+      "value": "8080"
+    },
+    {
+      "key": "bookId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{sever}}:{{port}}/health"
+      }
+    },
+    {
+      "name": "02 - Ready - PostgreSQL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{sever}}:{{port}}/ready"
+      }
+    },
+    {
+      "name": "03 - Listar todos los libros",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{sever}}:{{port}}/api/books"
+      }
+    },
+    {
+      "name": "04 - Buscar libros",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{sever}}:{{port}}/api/books?search=prueba",
+          "host": ["{{sever}}"],
+          "port": "{{port}}",
+          "path": ["api", "books"],
+          "query": [
+            {
+              "key": "search",
+              "value": "prueba"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "05 - Crear libro de prueba",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    if (response.data && response.data.id) {",
+              "        pm.collectionVariables.set('bookId', response.data.id);",
+              "        console.log('ID guardado para las siguientes pruebas:', response.data.id);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Libro de prueba NEXORA\",\n  \"author\": \"Autor de prueba\",\n  \"genre\": \"Pruebas\",\n  \"description\": \"Libro creado desde Postman para validar el CRUD\",\n  \"language\": \"Español\",\n  \"price\": 150.50,\n  \"stock_quantity\": 5\n}"
+        },
+        "url": "{{sever}}:{{port}}/api/books"
+      }
+    },
+    {
+      "name": "06 - Obtener libro por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{sever}}:{{port}}/api/books/{{bookId}}"
+      }
+    },
+    {
+      "name": "07 - Actualizar libro",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"price\": 199.99,\n  \"stock_quantity\": 10\n}"
+        },
+        "url": "{{sever}}:{{port}}/api/books/{{bookId}}"
+      }
+    },
+    {
+      "name": "08 - Comprar una unidad",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 1\n}"
+        },
+        "url": "{{sever}}:{{port}}/api/books/{{bookId}}/purchase"
+      }
+    },
+    {
+      "name": "09 - Eliminar libro de prueba",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{sever}}:{{port}}/api/books/{{bookId}}"
+      }
+    },
+    {
+      "name": "10 - Probar ID inválido",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{sever}}:{{port}}/api/books/123"
+      }
+    },
+    {
+      "name": "11 - Crear libro con datos inválidos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"\",\n  \"author\": \"Autor de prueba\",\n  \"genre\": \"Pruebas\",\n  \"price\": -10\n}"
+        },
+        "url": "{{sever}}:{{port}}/api/books"
+      }
+    },
+    {
+      "name": "12 - Comprar más unidades que el inventario",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 999999\n}"
+        },
+        "url": "{{sever}}:{{port}}/api/books/{{bookId}}/purchase"
+      }
+    }
+  ]
+}

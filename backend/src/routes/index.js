@@ -1,33 +1,35 @@
+
+import {pool} from "../database/config.js";
+import booksRouter from "./book.routes.js";
+
 export class Routes {
-  static configure(app) {
-    // Verifica que Express esté respondiendo.
-    app.get('/health', (req, res) => {
-      res.status(200).json({
-        status: 'ok',
-        message: 'API funcionando',
-      });
-    });
-    
-    // ready: comprueba que PostgreSQL responde.
-    app.get('/ready', async (req, res, next) => {
-      try {
-        await pool.query('SELECT 1');
-
-        res.status(200).json({
-          status: 'ready',
-          database: 'connected',
+    static configure(app) {
+        // Comprueba que Express esté respondiendo.
+        app.get("/health", (req, res) => {
+            res.status(200).json({
+                status: "ok",
+                message: "API funcionando",
+            });
         });
-      } catch (error) {
-        res.status(503).json({
-          status: 'not_ready',
-          database: 'unavailable',
+
+        // Comprueba que PostgreSQL responda.
+        app.get("/ready", async (req, res) => {
+            try {
+                await pool.query("SELECT 1");
+
+                res.status(200).json({
+                    status: "ready",
+                    database: "connected",
+                });
+            } catch (error) {
+                res.status(503).json({
+                    status: "not_ready",
+                    database: "unavailable",
+                });
+            }
         });
-      }
-    });
-    // Más adelante:
-    // app.use('/api/books', booksRouter);
 
-
-    
-  }
+        // Registra todas las rutas del CRUD de libros.
+        app.use("/api/books", booksRouter);
+    }
 }

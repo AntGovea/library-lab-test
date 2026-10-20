@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "db:schema": "node ./src/database/run-schema.js",
+    "db:seed": "node ./src/database/seed.js",
+    "db:setup": "npm run db:schema && npm run db:seed",
     "test": "jest"
   },
   "keywords": [],

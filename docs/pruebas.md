@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Construir una aplicación de biblioteca con frontend y backend separados, API REST, PostgreSQL, pruebas automatizadas y funcionales, documentación, Docker y un pipeline de integración continua con Jenkins.
+Construir una aplicación de biblioteca con frontend y backend separados, API REST, PostgreSQL, pruebas automatizadas y funcionales, documentación, Docker
 
 **Reglas de trabajo**
 - [ ] Completar las fases progresivamente.

@@ -1,10 +1,12 @@
 
 -- =========================================================
 -- NEXORA - ESQUEMA INICIAL DE LA BASE DE DATOS
+--
 -- Orden de creación:
 -- 1. books
--- 2. sales
--- 3. sale_items
+-- 2. Índices para búsqueda de libros
+-- 3. sales
+-- 4. sale_items
 -- =========================================================
 
 
@@ -37,7 +39,6 @@ CREATE TABLE IF NOT EXISTS books (
     publisher VARCHAR(150),
 
     -- Año de publicación opcional.
-    -- Si existe, debe estar entre 1000 y 2100.
     publication_year SMALLINT
         CHECK (publication_year BETWEEN 1000 AND 2100),
 
@@ -50,23 +51,44 @@ CREATE TABLE IF NOT EXISTS books (
     language VARCHAR(50),
 
     -- Precio obligatorio y mayor que cero.
-    -- NUMERIC(10,2) permite almacenar dos decimales.
     price NUMERIC(10, 2) NOT NULL
         CHECK (price > 0),
 
     -- Inventario inicial de cero si no se especifica.
-    -- Nunca se permiten cantidades negativas.
     stock_quantity INTEGER NOT NULL DEFAULT 0
         CHECK (stock_quantity >= 0),
 
-
+    -- URL de la portada del libro; opcional.
     image_url TEXT,
-    -- PostgreSQL asigna la fecha y hora automáticamente.
+
+    -- Fecha y hora de creación.
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    -- Se debe actualizar desde el backend al editar un libro.
+    -- Fecha y hora de última actualización.
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+
+-- =========================================================
+-- ÍNDICES PARA EL BUSCADOR
+--
+-- Permiten buscar por título, autor o género.
+-- Son índices de trigramas para búsquedas parciales
+-- y sin distinguir mayúsculas/minúsculas con ILIKE.
+--
+-- Requiere la extensión pg_trgm.
+-- =========================================================
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE INDEX IF NOT EXISTS idx_books_title_search
+    ON books USING GIN (title gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS idx_books_author_search
+    ON books USING GIN (author gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS idx_books_genre_search
+    ON books USING GIN (genre gin_trgm_ops);
 
 
 -- =========================================================
@@ -89,24 +111,21 @@ CREATE TABLE IF NOT EXISTS sales (
 
 -- =========================================================
 -- TABLA: SALE_ITEMS
--- Tabla intermedia que conecta SALES y BOOKS.
+-- Conecta SALES y BOOKS.
 --
 -- Una venta puede contener muchos libros.
 -- Un libro puede aparecer en muchas ventas.
--- Por eso esta tabla resuelve la relación muchos a muchos.
 -- =========================================================
 
 CREATE TABLE IF NOT EXISTS sale_items (
     -- Identificador de cada línea de venta.
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    -- Clave foránea hacia la venta correspondiente.
     -- Si se elimina una venta, se eliminan sus líneas.
     sale_id BIGINT NOT NULL
         REFERENCES sales(id) ON DELETE CASCADE,
 
-    -- Clave foránea hacia el libro vendido.
-    -- RESTRICT protege los libros que tienen historial de ventas.
+    -- Protege los libros que tienen historial de ventas.
     book_id VARCHAR(3) NOT NULL
         REFERENCES books(id) ON DELETE RESTRICT,
 
@@ -119,3 +138,15 @@ CREATE TABLE IF NOT EXISTS sale_items (
     unit_price NUMERIC(10, 2) NOT NULL
         CHECK (unit_price >= 0)
 );
+
+
+-- =========================================================
+-- ÍNDICES PARA RELACIONES DE VENTAS
+-- Facilitan consultas de líneas por venta o por libro.
+-- =========================================================
+
+CREATE INDEX IF NOT EXISTS idx_sale_items_sale_id
+    ON sale_items (sale_id);
+
+CREATE INDEX IF NOT EXISTS idx_sale_items_book_id
+    ON sale_items (book_id);

@@ -1,15 +1,32 @@
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+import apiClient from "../api/api";
+import apiEndpoints from "../constants/apiEndpoints";
 
-export async function getBooks() {
-    const response = await fetch(`${API_URL}/api/books`);
+export async function getBooks(search = "") {
+  const response = await apiClient.get(apiEndpoints.books.list, {
+    params: search.trim() ? { search: search.trim() } : {},
+  });
 
-    if (!response.ok) {
-        throw new Error("No se pudieron cargar los libros.");
-    }
+  return response.data.data ?? [];
+}
 
-    const result = await response.json();
+export async function getBookById(id) {
+  const response = await apiClient.get(apiEndpoints.books.detail(id));
+  return response.data.data ?? response.data;
+}
 
-    // Nuestro backend devuelve los libros dentro de data.
-    return result.data;
+export async function createBook(book) {
+  return apiClient.post(apiEndpoints.books.create, book);
+}
+
+export async function updateBook(id, book) {
+  return apiClient.put(apiEndpoints.books.update(id), book);
+}
+
+export async function deleteBook(id) {
+  return apiClient.delete(apiEndpoints.books.delete(id));
+}
+
+export async function purchaseBook(id, quantity) {
+  return apiClient.post(apiEndpoints.books.purchase(id), { quantity });
 }

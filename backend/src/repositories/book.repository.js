@@ -1,29 +1,36 @@
-// src/repositories/book.repository.js
 
 import { pool } from "../database/config.js";
 
 // Consultas a PostgreSQL: aquí no manejamos peticiones HTTP.
 export const bookRepository = {
     // Devuelve todos los libros o filtra por título, autor o género.
-    async findAll(search = "") {
-        const query = `
-            SELECT *
-            FROM books
-            WHERE
-                $1 = ''
-                OR title ILIKE $2
-                OR author ILIKE $2
-                OR genre ILIKE $2
-            ORDER BY title ASC
-        `;
 
-        const result = await pool.query(query, [
-            search,
-            `%${search}%`
-        ]);
+    async findAll(search = "") {
+        const normalizedSearch = search.trim();
+
+        const result = await pool.query(
+            `SELECT *
+     FROM books
+     WHERE
+       $1 = ''
+       OR title ILIKE $2
+       OR author ILIKE $2
+       OR genre ILIKE $2
+       OR isbn ILIKE $2
+       OR publisher ILIKE $2
+       OR CAST(publication_year AS TEXT) ILIKE $2
+       OR description ILIKE $2
+       OR CAST(pages AS TEXT) ILIKE $2
+       OR language ILIKE $2
+       OR CAST(price AS TEXT) ILIKE $2
+       OR CAST(stock_quantity AS TEXT) ILIKE $2
+     ORDER BY title ASC`,
+            [normalizedSearch, `%${normalizedSearch}%`]
+        );
 
         return result.rows;
     },
+
 
     // Busca un libro por su clave primaria.
     async findById(id) {
@@ -39,13 +46,23 @@ export const bookRepository = {
     async create(book) {
         const query = `
             INSERT INTO books (
-                id, title, author, genre, isbn, publisher,
-                publication_year, description, pages, language,
-                price, stock_quantity
+                id,
+                title,
+                author,
+                genre,
+                isbn,
+                publisher,
+                publication_year,
+                description,
+                pages,
+                language,
+                price,
+                stock_quantity,
+                image_url
             )
             VALUES (
-                $1, $2, $3, $4, $5, $6,
-                $7, $8, $9, $10, $11, $12
+                $1, $2, $3, $4, $5, $6, $7,
+                $8, $9, $10, $11, $12, $13
             )
             RETURNING *
         `;
@@ -62,7 +79,8 @@ export const bookRepository = {
             book.pages,
             book.language,
             book.price,
-            book.stock_quantity
+            book.stock_quantity,
+            book.image_url ?? null
         ];
 
         const result = await pool.query(query, values);
@@ -83,7 +101,8 @@ export const bookRepository = {
             pages: "pages",
             language: "language",
             price: "price",
-            stock_quantity: "stock_quantity"
+            stock_quantity: "stock_quantity",
+            image_url: "image_url"
         };
 
         const entries = Object.entries(fields).filter(
@@ -97,7 +116,8 @@ export const bookRepository = {
         // Los nombres de columna salen de nuestra lista permitida.
         // Los valores siguen usando parámetros SQL.
         const assignments = entries.map(
-            ([key], index) => `${columns[key]} = $${index + 2}`
+            ([key], index) =>
+                `${columns[key]} = $${index + 2}`
         );
 
         const values = [
@@ -118,7 +138,7 @@ export const bookRepository = {
         return result.rows[0] ?? null;
     },
 
-    // Elimina el libro. La base de datos protegerá el historial de ventas.
+    // Elimina el libro. La base de datos protege el historial de ventas.
     async delete(id) {
         const result = await pool.query(
             "DELETE FROM books WHERE id = $1 RETURNING id",
@@ -194,11 +214,14 @@ export const bookRepository = {
                 remainingStock: book.stock_quantity
             };
         } catch (error) {
-            // Si una operación falla, revertimos todos los cambios.
-            await client.query("ROLLBACK");
+            try {
+                await client.query("ROLLBACK");
+            } catch (rollbackError) {
+                console.error("Error al revertir la compra:", rollbackError);
+            }
+
             throw error;
         } finally {
-            // Devuelve la conexión al pool incluso si hubo un error.
             client.release();
         }
     }

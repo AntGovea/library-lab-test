@@ -1,5 +1,6 @@
 import app from '../app/app.js';
-import pool from '../database/config.js';
+import {pool} from "../database/config.js";
+
 
 export class Server {
   constructor() {

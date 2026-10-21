@@ -4,15 +4,17 @@ import {
   Orbit,
   Search,
   Boxes,
-  Trash2,
-  Settings,
   Menu,
   X,
   Sparkles,
   ChevronRight,
   Library,
+  BookOpen,
 } from 'lucide-react'
-
+import Dashboard from "./pages/Dashboard";
+import Documentation from "./pages/Documentation";
+import Catalog from './components/catalog/Catalog'
+import Inventory from "./components/inventory/Inventory";
 const menuItems = [
   {
     id: 'dashboard',
@@ -50,24 +52,35 @@ const menuItems = [
     activeBg: 'bg-amber-50',
     activeText: 'text-amber-700',
   },
+  // {
+  //   id: 'trash',
+  //   label: 'Papelera',
+  //   description: 'Libros eliminados',
+  //   icon: Trash2,
+  //   color: 'from-rose-500 to-pink-400',
+  //   activeBg: 'bg-rose-50',
+  //   activeText: 'text-rose-700',
+  // },
+  // {
+  //   id: 'settings',
+  //   label: 'Configuración',
+  //   description: 'Preferencias del sistema',
+  //   icon: Settings,
+  //   color: 'from-slate-500 to-slate-400',
+  //   activeBg: 'bg-slate-100',
+  //   activeText: 'text-slate-700',
+  // },
+
   {
-    id: 'trash',
-    label: 'Papelera',
-    description: 'Libros eliminados',
-    icon: Trash2,
-    color: 'from-rose-500 to-pink-400',
-    activeBg: 'bg-rose-50',
-    activeText: 'text-rose-700',
+    id: 'documentation',
+    label: 'Documentación API',
+    description: 'Endpoints y respuestas del backend',
+    icon: BookOpen,
+    color: 'from-fuchsia-500 to-pink-400',
+    activeBg: 'bg-fuchsia-50',
+    activeText: 'text-fuchsia-700',
   },
-  {
-    id: 'settings',
-    label: 'Configuración',
-    description: 'Preferencias del sistema',
-    icon: Settings,
-    color: 'from-slate-500 to-slate-400',
-    activeBg: 'bg-slate-100',
-    activeText: 'text-slate-700',
-  },
+
 ]
 
 function App() {
@@ -155,8 +168,8 @@ function App() {
                 type="button"
                 onClick={() => navigateTo(item.id)}
                 className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl px-3 py-3 text-left transition-all duration-200 ${isActive
-                    ? `${item.activeBg} ${item.activeText} shadow-sm`
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                  ? `${item.activeBg} ${item.activeText} shadow-sm`
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                   }`}
               >
                 {isActive && (
@@ -167,8 +180,8 @@ function App() {
 
                 <span
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${isActive
-                      ? `bg-gradient-to-br ${item.color} text-white shadow-md`
-                      : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:shadow-sm'
+                    ? `bg-gradient-to-br ${item.color} text-white shadow-md`
+                    : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:shadow-sm'
                     }`}
                 >
                   <Icon size={19} />
@@ -195,7 +208,7 @@ function App() {
         </nav>
 
         {/* Tarjeta inferior */}
-        <div className="p-4">
+        {/* <div className="p-4">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-500 p-4 text-white shadow-lg shadow-violet-200/70">
             <div className="absolute -right-5 -top-5 h-24 w-24 rounded-full bg-white/10" />
             <div className="relative">
@@ -212,7 +225,7 @@ function App() {
           <p className="mt-4 text-center text-xs text-slate-400">
             BookSpace · v1.0
           </p>
-        </div>
+        </div> */}
       </aside>
 
       {/* Contenido principal */}
@@ -246,7 +259,7 @@ function App() {
             </span>
 
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 font-extrabold text-white shadow-md shadow-blue-200">
-              B
+              A
             </div>
           </div>
         </header>
@@ -276,31 +289,40 @@ function App() {
             </div>
 
             {/* Placeholder: aquí se renderizarán los módulos reales */}
-            <section className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:p-8">
-              <div className="flex items-start gap-4">
-                <div
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${activeItem.color} text-white shadow-lg`}
-                >
-                  <ActiveIcon size={27} />
-                </div>
 
-                <div>
-                  <h3 className="text-xl font-extrabold text-slate-900">
-                    Módulo de {activeItem.label}
-                  </h3>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                    {activeItem.description}. Aquí se integrará el componente
-                    correspondiente sin sobrecargar App.jsx con la lógica
-                    de cada módulo.
-                  </p>
+            {activeModule === "dashboard" ? (
+              <Dashboard />
+            ) : activeModule === "catalog" ? (
+              <Catalog />
+            ) : activeModule === "inventory" ? (
+              <Inventory />
+            ) : activeModule === "documentation" ? (
+              <Documentation />
+            ) : (
+              <section className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:p-8">
+                <div className="flex items-start gap-4">
+                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${activeItem.color} text-white shadow-lg`}>
+                    <ActiveIcon size={27} />
+                  </div>
 
-                  <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
-                    <Sparkles size={14} />
-                    Pendiente de implementar
-                  </span>
+                  <div>
+                    <h3 className="text-xl font-extrabold text-slate-900">
+                      Módulo de {activeItem.label}
+                    </h3>
+
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                      {activeItem.description}. Aquí se integrará el componente correspondiente.
+                    </p>
+
+                    <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
+                      <Sparkles size={14} />
+                      Pendiente de implementar
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
+
           </div>
         </main>
       </div>

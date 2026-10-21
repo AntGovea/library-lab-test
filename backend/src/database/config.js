@@ -1,25 +1,14 @@
-import pg from 'pg';
 
+import "dotenv/config";
+import pg from "pg";
+
+// Pool administra y reutiliza las conexiones a PostgreSQL.
 const { Pool } = pg;
 
-// Pool reutiliza conexiones en lugar de abrir una por cada petición.
-// Las variables de entorno permiten cambiar la configuración sin
-// modificar el código.
-const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT) || 5432,
-  database: process.env.DB_NAME || 'biblioteca',
-  user: process.env.DB_USER || 'biblioteca_user',
-  password: process.env.DB_PASSWORD,
-  max: 10,
-  idleTimeoutMillis: 30_000,
-  connectionTimeoutMillis: 5_000,
+export const pool = new Pool({
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
 });
-
-// Errores inesperados en conexiones inactivas del pool.
-pool.on('error', (error) => {
-  console.error('Error inesperado en el pool de PostgreSQL:', error);
-});
-
-// Exportamos el pool para usarlo desde repositorios o servicios.
-export default pool;

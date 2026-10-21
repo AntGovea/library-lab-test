@@ -18,6 +18,7 @@ class App {
 
     routes() {
         Routes.configure(this.app);
+        
     }
 
     errors() {

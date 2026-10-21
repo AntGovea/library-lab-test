@@ -4,16 +4,17 @@ import {
   Orbit,
   Search,
   Boxes,
-  Trash2,
-  Settings,
   Menu,
   X,
   Sparkles,
   ChevronRight,
   Library,
+  BookOpen,
 } from 'lucide-react'
+import Dashboard from "./pages/Dashboard";
+import Documentation from "./pages/Documentation";
 import Catalog from './components/catalog/Catalog'
-
+import Inventory from "./components/inventory/Inventory";
 const menuItems = [
   {
     id: 'dashboard',
@@ -51,24 +52,35 @@ const menuItems = [
     activeBg: 'bg-amber-50',
     activeText: 'text-amber-700',
   },
+  // {
+  //   id: 'trash',
+  //   label: 'Papelera',
+  //   description: 'Libros eliminados',
+  //   icon: Trash2,
+  //   color: 'from-rose-500 to-pink-400',
+  //   activeBg: 'bg-rose-50',
+  //   activeText: 'text-rose-700',
+  // },
+  // {
+  //   id: 'settings',
+  //   label: 'Configuración',
+  //   description: 'Preferencias del sistema',
+  //   icon: Settings,
+  //   color: 'from-slate-500 to-slate-400',
+  //   activeBg: 'bg-slate-100',
+  //   activeText: 'text-slate-700',
+  // },
+
   {
-    id: 'trash',
-    label: 'Papelera',
-    description: 'Libros eliminados',
-    icon: Trash2,
-    color: 'from-rose-500 to-pink-400',
-    activeBg: 'bg-rose-50',
-    activeText: 'text-rose-700',
+    id: 'documentation',
+    label: 'Documentación API',
+    description: 'Endpoints y respuestas del backend',
+    icon: BookOpen,
+    color: 'from-fuchsia-500 to-pink-400',
+    activeBg: 'bg-fuchsia-50',
+    activeText: 'text-fuchsia-700',
   },
-  {
-    id: 'settings',
-    label: 'Configuración',
-    description: 'Preferencias del sistema',
-    icon: Settings,
-    color: 'from-slate-500 to-slate-400',
-    activeBg: 'bg-slate-100',
-    activeText: 'text-slate-700',
-  },
+
 ]
 
 function App() {
@@ -196,7 +208,7 @@ function App() {
         </nav>
 
         {/* Tarjeta inferior */}
-        <div className="p-4">
+        {/* <div className="p-4">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-500 p-4 text-white shadow-lg shadow-violet-200/70">
             <div className="absolute -right-5 -top-5 h-24 w-24 rounded-full bg-white/10" />
             <div className="relative">
@@ -213,7 +225,7 @@ function App() {
           <p className="mt-4 text-center text-xs text-slate-400">
             BookSpace · v1.0
           </p>
-        </div>
+        </div> */}
       </aside>
 
       {/* Contenido principal */}
@@ -247,7 +259,7 @@ function App() {
             </span>
 
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 font-extrabold text-white shadow-md shadow-blue-200">
-              B
+              A
             </div>
           </div>
         </header>
@@ -277,8 +289,15 @@ function App() {
             </div>
 
             {/* Placeholder: aquí se renderizarán los módulos reales */}
-            {activeModule === 'catalog' ? (
+
+            {activeModule === "dashboard" ? (
+              <Dashboard />
+            ) : activeModule === "catalog" ? (
               <Catalog />
+            ) : activeModule === "inventory" ? (
+              <Inventory />
+            ) : activeModule === "documentation" ? (
+              <Documentation />
             ) : (
               <section className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:p-8">
                 <div className="flex items-start gap-4">
@@ -303,6 +322,7 @@ function App() {
                 </div>
               </section>
             )}
+
           </div>
         </main>
       </div>
